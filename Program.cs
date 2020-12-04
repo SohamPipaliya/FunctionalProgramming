@@ -1,5 +1,6 @@
 ﻿using System;
 using static System.Console;
+using NDCConference;
 
 namespace FunctionalProgramming
 {
@@ -7,61 +8,89 @@ namespace FunctionalProgramming
     {
         static void Main(string[] args)
         {
-            NDCCSharp myClass = new NDCCSharp(10, 20, 30);
-            NDCCSharp myClass2 = new NDCCSharp(20, 10, 30);
+            NDCCSharp myClass = new NDCCSharp(1, 22, "Soham", "Moviya");
+            NDCCSharp myClass2 = new NDCCSharp(2, 20, "Yash", "Moviya");
 
-            Console.WriteLine(myClass.MyProperty);
-            Console.WriteLine(myClass.MyProperty2);
-            Console.WriteLine(myClass.MyProperty3);
+            myClass.Swap();
+            WriteLine(myClass.ID);
+            WriteLine(myClass.Age);
 
-            Console.WriteLine("-->");
-            myClass.swap();
+            myClass++;
+            WriteLine(myClass.Age);
+            myClass--;
+            WriteLine(myClass.Age);
 
-            Console.WriteLine(myClass.MyProperty);
-            Console.WriteLine(myClass.MyProperty2);
-            Console.WriteLine(myClass.MyProperty3);
+            NDCCSharp myClass3 = "Soham Patel";// or you can also give already created object
+            WriteLine((string)myClass3);
 
-            Console.WriteLine("-->");
-            myClass.MyProperty = 50;
-            myClass2.MyProperty = 50;
+            myClass3 = 22; // each time it return new new instance
+            WriteLine((int)myClass3);
 
-            Console.WriteLine(myClass.GetHashCode());
-            Console.WriteLine(myClass2.GetHashCode());
-
-            string str = myClass;
-            NDCCSharp nDCCSharp = str;
+            WriteLine(myClass == myClass2);
+            WriteLine(myClass != myClass2);
             ReadLine();
         }
     }
+}
 
+namespace NDCConference
+{
     class NDCCSharp
     {
-        public int MyProperty { get; set; }
-        public int MyProperty2 { get; set; }
-        public int MyProperty3 { get; set; }
+        public int ID { get; private set; }
+        public int Age { get; private set; }
+        public string Name { get; private set; }
+        public string Address { get; private set; }
 
-        public NDCCSharp(string s) { }
+        private NDCCSharp(string Name) { this.Name = Name; }
 
-        public NDCCSharp(int p, int p2, int p3) => (MyProperty, MyProperty2, MyProperty3) = (p, p2, p3);
+        private NDCCSharp(int Age) { this.Age = Age; }
 
-        public static bool operator ==(NDCCSharp o1, NDCCSharp o2) => (o1.MyProperty, o1.MyProperty, o1.MyProperty3) == (o2.MyProperty, o2.MyProperty, o2.MyProperty3);
+        public NDCCSharp(int pID, int pAge, string pName, string pAddress) => (ID, Age, Name, Address) = (pID, pAge, pName, pAddress);
 
-        public static bool operator !=(NDCCSharp o1, NDCCSharp o2) => (o1.MyProperty, o1.MyProperty, o1.MyProperty3) != (o2.MyProperty, o2.MyProperty, o2.MyProperty3);
 
-        public static implicit operator string(NDCCSharp nDCCSharp) => nDCCSharp.MyProperty.ToString();
+        public static implicit operator string(NDCCSharp nDCCSharp) => nDCCSharp.Name;
 
-        public static implicit operator NDCCSharp(string sr) => new NDCCSharp(sr);
+        public static implicit operator int(NDCCSharp nDCCSharp) => nDCCSharp.Age;
+
+        public static implicit operator NDCCSharp(string Name) => new NDCCSharp(Name);
+
+        public static implicit operator NDCCSharp(int Age) => new NDCCSharp(Age); // anything can be applied prerequiste is that you have to have that field or property
 
         void foo(string str)
         {
-            _ = str ?? throw new Exception();
-            Console.WriteLine(str);
+            _ = str ?? throw new Exception(); // check wether string is null or not.
+                                              // or 
+            str = str ?? throw new Exception();
+            WriteLine(str);
         }
 
-        public void swap() => (MyProperty, MyProperty2) = (MyProperty2, MyProperty);
+        public void Swap() => (ID, Age) = (Age, ID);
 
-        public override bool Equals(object obj) => obj is NDCCSharp variable ? variable == this : false;
+        public static bool operator ==(NDCCSharp o1, NDCCSharp o2) => (o1.ID, o1.Age, o1.Address, o1.Name) == (o2.ID, o2.Age, o2.Address, o2.Name); // or any condition can be applied
+        /*{
+            return o1.ID == o2.ID && o1.Name == o2.Name && o1.Address == o2.Address && o1.Age == o2.Age;
+        }*/
 
-        public override int GetHashCode() => MyProperty.GetHashCode() ^ MyProperty2.GetHashCode() ^ MyProperty3.GetHashCode();
+        public static bool operator !=(NDCCSharp o1, NDCCSharp o2) => (o1.ID, o1.Age, o1.Address, o1.Name) != (o2.ID, o2.Age, o2.Address, o2.Name);
+        /*{
+            return o1.ID != o2.ID || o1.Name != o2.Name || o1.Address != o2.Address || o1.Age != o2.Age;
+        }*/
+
+        public static NDCCSharp operator ++(NDCCSharp nDCCSharp)
+        {
+            nDCCSharp.Age++;
+            return nDCCSharp;
+        }
+
+        public static NDCCSharp operator --(NDCCSharp nDCCSharp)
+        {
+            nDCCSharp.Age--;
+            return nDCCSharp;
+        }
+
+        public override bool Equals(object? obj) => obj is NDCCSharp variable ? variable == this : false;
+
+        public override int GetHashCode() => ID.GetHashCode() ^ Name.GetHashCode() ^ Address.GetHashCode();
     }
 }
