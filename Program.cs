@@ -37,17 +37,16 @@ namespace NDCConference
 {
     class NDCCSharp
     {
-        public int ID { get; private set; }
+        public int ID { get; set; }
         public int Age { get; private set; }
         public string Name { get; private set; }
-        public string Address { get; private set; }
+        public string Address { get; init; }
 
         private NDCCSharp(string Name) { this.Name = Name; }
 
         private NDCCSharp(int Age) { this.Age = Age; }
 
         public NDCCSharp(int pID, int pAge, string pName, string pAddress) => (ID, Age, Name, Address) = (pID, pAge, pName, pAddress);
-
 
         public static implicit operator string(NDCCSharp nDCCSharp) => nDCCSharp.Name;
 
