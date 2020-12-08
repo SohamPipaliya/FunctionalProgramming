@@ -15,6 +15,8 @@ namespace FunctionalProgramming
             WriteLine(myClass.ID);
             WriteLine(myClass.Age);
 
+            if (myClass) WriteLine("Yes Name Is - " + myClass.Name);
+
             myClass++;
             WriteLine(myClass.Age);
             myClass--;
@@ -28,6 +30,9 @@ namespace FunctionalProgramming
 
             WriteLine(myClass == myClass2);
             WriteLine(myClass != myClass2);
+
+            WriteLine(myClass.Equals(1.0f)); // as object
+            WriteLine(myClass.Equals(1)); // as class beacuse it auto converts int to NDCCSharp
             ReadLine();
         }
     }
@@ -35,7 +40,7 @@ namespace FunctionalProgramming
 
 namespace NDCConference
 {
-    class NDCCSharp
+    class NDCCSharp : IEquatable<NDCCSharp>
     {
         public int ID { get; set; }
         public int Age { get; private set; }
@@ -52,9 +57,11 @@ namespace NDCConference
 
         public static implicit operator int(NDCCSharp nDCCSharp) => nDCCSharp.Age;
 
+        public static implicit operator bool(NDCCSharp nDCCSharp) => nDCCSharp.Name == "Soham";
+
         public static implicit operator NDCCSharp(string Name) => new NDCCSharp(Name);
 
-        public static implicit operator NDCCSharp(int Age) => new NDCCSharp(Age); // anything can be applied prerequiste is that you have to have that field or property
+        public static implicit operator NDCCSharp(int Age) => new NDCCSharp(Age); // anything can be applied prerequiste is that you have to be able to return that property.
 
         void foo(string str)
         {
@@ -91,5 +98,7 @@ namespace NDCConference
         public override bool Equals(object? obj) => obj is NDCCSharp variable ? variable == this : false;
 
         public override int GetHashCode() => ID.GetHashCode() ^ Name.GetHashCode() ^ Address.GetHashCode();
+
+        public virtual bool Equals(NDCCSharp other) => other == this;
     }
 }
