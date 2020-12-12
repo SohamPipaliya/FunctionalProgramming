@@ -1,6 +1,8 @@
 ﻿using System;
 using static System.Console;
 using NDCConference;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace FunctionalProgramming
 {
@@ -33,7 +35,26 @@ namespace FunctionalProgramming
 
             WriteLine(myClass.Equals(1.0f)); // as object
             WriteLine(myClass.Equals(1)); // as class beacuse it auto converts int to NDCCSharp
+
+            Span<int> span = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
+            var newSpan = span.Slice(1, 2);
+
+            foreach (var item in span[..]) // enables you apply index as range if no first or last arg not give it take first as element as first and last element as last. ex:- [0..10],[..10],[1..]. if you give first and last is not considered
+            {
+                WriteLine(item);
+            }
+
+            FP1();
+
             ReadLine();
+        }
+
+        static async void FP1() // can use Task instead of void
+        {
+            await foreach (var item in Csharp8.GetAsyncEnumerator())
+            {
+                WriteLine(item);
+            }
         }
     }
 }
@@ -100,5 +121,66 @@ namespace NDCConference
         public override int GetHashCode() => ID.GetHashCode() ^ Name.GetHashCode() ^ Address.GetHashCode();
 
         public virtual bool Equals(NDCCSharp other) => other == this;
+    }
+
+    class Csharp8 : IDisposable
+    {
+        public int MyProperty { get; set; }
+        public void Dispose()
+        {
+            WriteLine("dispose called");
+        }
+
+        public static async IAsyncEnumerator<int> GetAsyncEnumerator()
+        {
+            for (int i = 0; i < 100; i++)
+            {
+                yield return await Task.Delay(0).ContinueWith(_ => i);// to not to store in any variable use _
+            }
+        }
+    }
+
+    class CSharp9
+    {
+        // Improved Target Typing
+        public List<List<int>> list = new() { new() { 1, 2, 3, 4, 5 }, new() { 6, 7, 8, 9, 10 } };
+
+        //init property tat can only be set while instanciating class
+        public int Value { get; init; }
+        void foo()
+        {
+            CSharp9 obj = new() { Value = 10 };
+            //not possible obj.Value = 10;
+        }
+
+        //Relational Pattern Matching 
+        void foo2()
+        {
+            // use this instead of if else
+            var msg = Value switch
+            {
+                int value when value <= 0 => "Less than or equal to 0",
+                int value when value > 0 && value <= 10 => "More than 0 but less than or equal to 10",
+                _ => "More than 10"
+            };
+
+            //also
+            if (Value is > 0 and <= 10) Console.WriteLine("do something");
+        }
+
+        //Record type
+        public static void foo3()
+        {
+            var obj = new Person("Soham", 5);
+            var obj3 = obj with { Age = 10};
+        }
+
+        public record Person(string Name, int Age);// name anf age are properties with get and init accessor
+    }
+
+    static class Manager // these methods are automatically applied
+    {
+        public static IAsyncEnumerator<T> GetAsyncEnumerator<T>(this IAsyncEnumerator<T> enumerator) => enumerator;
+        public static IEnumerator<T> GetEnumerator<T>(this IEnumerator<T> enumerator) => enumerator;
     }
 }
